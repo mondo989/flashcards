@@ -1,78 +1,62 @@
-import React from 'react';
-import './App.css';
+import React, {useState, useEffect} from 'react';
+import Cards from './components/Cards/Cards';
+import CardForm from './components/CardForm/CardForm';
+import Pagination from './components/Pagination/Pagination';
+import { db } from './firebase';
 
-// const firebase = require('firebase/app');
-const buttons = ['facebook', 'twitter', 'youtube'];
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <Flashcard></Flashcard>
-        <ActionsContainer></ActionsContainer>
-        <LoggingButton></LoggingButton>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+  const [cards, setCards] = useState([]);
+  const [loading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [cardsPerPage] = useState(1);
 
-function Flashcard() {
-  return (
-    <div className="Flash-card">      
-      <div className="Flsh-card__contaainer">
-        <div className="Flash-card__question">
-          "What is the difference between an owl and a bunjee coard?"
-        </div>
-      </div>
-    </div>
-  );
-} 
+  useEffect(() => {
+    const unsub = db.collection('cards').onSnapshot(snapshot => {
+      const allCards = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setCards(allCards);
+      console.log("These are ubsub" + allCards); // Delete
+    });
+    return () => {
+      console.log('cleanup');
+      unsub();
+    };
+  }, []);
 
-function ActionsContainer() {
-  return (
-    <div className="Actions-container">
-      <div className="Actions-container__button-row">
-      {/* TODO: Iterate through buttons as opposed to calling them in static */}
-        <ActionButtonShowAnswer></ActionButtonShowAnswer>
-      </div>
-    </div>
-  );
-}
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+  const currentCards = cards.slice(indexOfFirstCard, indexOfLastCard);
 
-// These buttons shouldn't be hardcoded chief
-function ActionButtonShowAnswer() {
-  // document.querySelector("")
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+
+  var testing = function() {
+    db.collection("cards").doc('Y8e1VcsZ6f8cmUf9WDxx').update({
+      question: "Howdy dide?",
+      answer: "It was me.",
+      // timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
   
+  testing()
+
   return (
-    <div className="Button" onClick={showAnswer}>
-      <div className="Button__icon">X</div>
-      <p>Show Answer</p>
+    <div>
+      <h1>=Flashcards=</h1>
+      <Cards cards={currentCards} loading={loading} />
+      <Pagination 
+        cardsPerPage={cardsPerPage} 
+        totalCards={cards.length}
+        paginate={paginate}
+      />
+      <hr />
+      <CardForm />
+
     </div>
-  )
-}
-
-
-class LoggingButton extends React.Component {
-  // This syntax ensures `this` is bound within handleClick.
-  // Warning: this is *experimental* syntax.
-  handleClick = () => {
-    console.log('this is:', this);
-  }
-
-  render() {
-    return (
-      <button onClick={this.handleClick}>
-        Click me
-      </button>
-    );
-  }
-}
-
-var showAnswer = function() {
-  document.querySelector(".Flash-card").toggle();
-  console.log("Click ayeee");
-}
-
-// firebase.initializeApp();
+  );
+};
 
 export default App;

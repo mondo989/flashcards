@@ -11,6 +11,9 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+// shoutout to a few videos helping me along the way. 
+// Traversy Media - https://www.youtube.com/watch?v=IYCa1F-OWmk
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
