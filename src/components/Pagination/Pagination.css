@@ -1,7 +1,17 @@
+nav.nav__pagination {
+  -ms-flex-line-pack: center;
+      align-content: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin-top: 50px;
+}
+
 .pagination {
-  list-style-type: circle;
-  display: inline-block;
-  width: 90%;
+  max-width: 420px;
 }
 
 .pagination li {
